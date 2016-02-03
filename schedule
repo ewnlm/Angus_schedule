@@ -1,7 +1,26 @@
 #!/usr/bin/perl -w
   use strict;
-  my $str = `date +%m%Y`;
-  my ($month, $year)=$str=~/(\d{2})(\d{4})/;
-  my $nu_week = `cal $month $year`;
-
+  my $debug=1;
+  my @staff;
+  my @whour = (7.5, 7.5, 7.5, 8, 6.5, 9, 9, 9);
+  ### Calendar {{{
+  my $nu_week = `echo -n "\$((\`cal -h| wc -l\`-2))"`;
+  my @str = `cal -h | tail -n $nu_week | head -n \$(($nu_week-1))`;
+  for my $i(@str) {
+    chomp($i);
+    $i=~s/\s+/,/g;
+    print "$i\n";
+  }
+  # }}}
+  ### Staff {{{
+  open FP, "staff.csv";
+  while(<FP>) {
+    chomp($_);
+    push @staff, $_;
+  }
+  close FP;
+  print "@staff\n", if($debug);
+  #}}}
+  ### Day off {{{
+  # }}}
 

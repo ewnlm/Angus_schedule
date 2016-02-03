@@ -12,3 +12,8 @@
 | 8 | 9 | :no\_entry: |:no\_entry: |:no\_entry: |:no\_entry: |:no\_entry: | :u55b6: |
 
 The table show the detail of schedule
+
+### Special rule
+* Class 2 or 5 (Today) forbid work on Class 2 and 3 (Tomorrow)
+* The class 2 or 5 on Tue forbid work on class 1 and 3 on Wed
+* Basiclly the work hours of month is 160

@@ -10,3 +10,5 @@
 | 6 | 9 | :no\_entry: |:no\_entry: |:no\_entry: |:no\_entry: |:no\_entry: | :u55b6: |
 | 7 | 9 | :no\_entry: |:no\_entry: |:no\_entry: |:no\_entry: |:no\_entry: | :u55b6: |
 | 8 | 9 | :no\_entry: |:no\_entry: |:no\_entry: |:no\_entry: |:no\_entry: | :u55b6: |
+
+The table show the detail of schedule

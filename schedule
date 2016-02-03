@@ -1,2 +1,7 @@
 #!/usr/bin/perl -w
   use strict;
+  my $str = `date +%m%Y`;
+  my ($month, $year)=$str=~/(\d{2})(\d{4})/;
+  my $nu_week = `cal $month $year`;
+
+

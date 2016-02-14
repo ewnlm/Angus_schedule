@@ -5,11 +5,11 @@
   my @whour = (7.5, 7.5, 7.5, 8, 6.5, 9, 9, 9);
   ### Calendar {{{
   my $nu_week = `echo -n "\$((\`cal -h| wc -l\`-2))"`;
-  my @str = `cal -h | tail -n $nu_week | head -n \$(($nu_week-1))`;
-  for my $i(@str) {
-    chomp($i);
-    $i=~s/\s+/,/g;
-    print "$i\n";
+  my @weeks = `cal -h | tail -n $nu_week | head -n \$(($nu_week-1))`;
+  for my $i(0..$#weeks) {
+    chomp($weeks[$i]);
+    $weeks[$i]=~s/\s+/,/g;
+    print "$i))$weeks[$i]\n", if($debug);
   }
   # }}}
   ### Staff {{{
@@ -22,5 +22,10 @@
   print "@staff\n", if($debug);
   #}}}
   ### Day off {{{
+  open FP, "day_off.csv";
+  while(<FP>) {
+
+  }
+  close FP;
   # }}}
 

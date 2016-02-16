@@ -2,16 +2,8 @@
   use strict;
   my $debug=1;
   my @staff;
-  my @whour = (7.5, 7.5, 7.5, 8, 6.5, 9, 9, 9);
-  ### Calendar {{{
-  my $nu_week = `echo -n "\$((\`cal -h| wc -l\`-2))"`;
-  my @weeks = `cal -h | tail -n $nu_week | head -n \$(($nu_week-1))`;
-  for my $i(0..$#weeks) {
-    chomp($weeks[$i]);
-    $weeks[$i]=~s/\s+/,/g;
-    print "$i))$weeks[$i]\n", if($debug);
-  }
-  # }}}
+  my @work_hour = (7.5, 7.5, 7.5, 8, 6.5, 9, 9, 9);
+  print "===== Debug Mode =====\n", if($debug); 
   ### Staff {{{
   open FP, "staff.csv";
   while(<FP>) {
@@ -19,13 +11,22 @@
     push @staff, $_;
   }
   close FP;
-  print "@staff\n", if($debug);
+  print " >>> Staff list:@staff\n", if($debug);
   #}}}
   ### Day off {{{
   open FP, "day_off.csv";
-  while(<FP>) {
 
-  }
   close FP;
   # }}}
+  ### Calendar {{{
+  my $nu_week = `echo -n "\$((\`cal -h| wc -l\`-2))"`;
+  my @cal_weeks = `cal -h | tail -n $nu_week | head -n \$(($nu_week-1))`;
+  my $first_sunday = $1, if($cal_weeks[0]=~/(\d)\s*$/);
+  my $last_day = $1, if($cal_weeks[$#cal_weeks]=~/(\d+)\s*$/);
+  #my $first_weekdays = $cal_weeks[0];
+  print " >>> First sunday of month: $first_sunday\n", if($debug);
+  print " >>> The last day of month: $last_day\n", if($debug);
+  #print " >>> First weekdays: $first_weekdays\n", if($debug);
+  # }}}
 
+  print "======================\n", if($debug); 

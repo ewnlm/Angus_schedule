@@ -23,6 +23,7 @@ The table show the detail of schedule
 ```
   @ary = grep {$_ =~ /[^$day_off[0][1]]/} grep {$_ =~ /[^$day_off[0][0]]/} @staff;
 ```
+..*negate smart match
 ```
   @ary = grep  {!($_ ~~ @{$day_off[0]})} @staff;
 ```

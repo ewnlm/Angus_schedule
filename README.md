@@ -20,11 +20,12 @@ The table show the detail of schedule
 * 中文測試
 
 ### Reviews
+
 * To search array from another array
 ```
   @ary = grep {$_ =~ /[^$day_off[0][1]]/} grep {$_ =~ /[^$day_off[0][0]]/} @staff;
 ```
- *negate smart match
+  * negate smart match
 ```
   @ary = grep  {!($_ ~~ @{$day_off[0]})} @staff;
 ```

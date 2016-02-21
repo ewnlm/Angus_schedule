@@ -18,12 +18,13 @@ The table show the detail of schedule
 * The class 2 or 5 on Tue forbid work on class 1 and 3 on Wed
 * Basiclly the work hours of month is 160
 * 中文測試
+
 ### Reviews
 * To search array from another array
 ```
   @ary = grep {$_ =~ /[^$day_off[0][1]]/} grep {$_ =~ /[^$day_off[0][0]]/} @staff;
 ```
-..*negate smart match
+ *negate smart match
 ```
   @ary = grep  {!($_ ~~ @{$day_off[0]})} @staff;
 ```

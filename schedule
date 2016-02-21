@@ -1,11 +1,12 @@
 #!/usr/bin/perl -w
   use strict;
-  my $debug=1;
+  my $debug=0;
   my @staff;
-  my %schedulue;
+  my %schedule;
   my @day_off;
   my $weekday;
-  my @work_hour = (7.5, 7.5, 7.5, 8, 6.5, 9, 9, 9);
+  my @class_unit = (7.5, 7.5, 7.5, 8, 6.5, 9, 9, 9);
+  my @time_card;
   print "===== Debug Mode =====\n", if($debug); 
   ### Staff {{{
   open FP, "staff.csv";
@@ -21,7 +22,6 @@
   while(<FP>) {
     push @day_off, [$1, $2], if(/(\w+),(\w+)/);
   }
-  print "$day_off[0][0]\n";
   close FP;
   if($debug) {
     for my $i(0..$#day_off) {
@@ -43,14 +43,44 @@
   my $begin_weekday;
   ($first_sunday==7)?($begin_weekday=1):($begin_weekday=7-$first_sunday);
   my $compensation = $begin_weekday-1;
+  my $cnt=0;
   for my $day(1..$last_day) {
     $weekday = (($day%7)+$compensation)%7;
     $weekday = 7, if($weekday==0);
     print " >>> Day: $day, Weekday: $weekday\n", if($debug);
+    ### $schedule{$weekday}{$day}{$class} = man_power
     for my $c(1..8) {
-
+      if($weekday==6 and $c==1) {
+	$schedule{$weekday}{$day}{$c} = $day_off[$cnt][0];
+      } elsif($weekday==6 and $c==2) {
+	$schedule{$weekday}{$day}{$c} = $day_off[$cnt][1];
+	$cnt++;
+      } elsif($weekday==6 and $c>=3 and $c<=5) {
+	$schedule{$weekday}{$day}{$c} = "XXX";
+      } elsif($weekday=7) {
+	$schedule{$weekday}{$day}{$c} = "XXX"
+      } else {
+	$schedule{$weekday}{$day}{$c} = "NONE"
+      }
     }
   }
   # }}}
+  ### Scheduling {{{
+  # Saturday Class 6/7/8
+  $cnt = 0;
+  for my $day(sort {$a<=>$b} keys %{$schedule{6}}) {
+    my @sat_mp = grep {!($_ ~~ @{$day_off[$cnt]})} @staff; 
 
+  }
+  ### }}}
+  #}
   print "======================\n", if($debug); 
+  print "@ary\n";
+  sub ary_shuffle {
+    my @ary = @_;
+    my @result;
+    for my $i(0..$#ary) {
+      my $nu = int(rand()%($#ary-$i));
+    }
+    @result;
+  }

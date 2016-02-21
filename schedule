@@ -1,7 +1,10 @@
 #!/usr/bin/perl -w
   use strict;
-  my $debug=1;
+  my $debug=0;
   my @staff;
+  my %schedulue;
+  my @day_off;
+  my $weekday;
   my @work_hour = (7.5, 7.5, 7.5, 8, 6.5, 9, 9, 9);
   print "===== Debug Mode =====\n", if($debug); 
   ### Staff {{{
@@ -15,18 +18,43 @@
   #}}}
   ### Day off {{{
   open FP, "day_off.csv";
-
+  while(<FP>) {
+    push @day_off, [$1, $2], if(/(\w+),(\w+)/);
+  }
+  print "$day_off[0][0]\n";
+  my @ary;
+  #@ary = grep {$_ =~ /[^$day_off[0][1]]/} grep {$_ =~ /[^$day_off[0][0]]/} @staff;
+  @ary = grep  {!($_ ~~ @{$day_off[0]})} @staff;
+  print "@ary\n";
   close FP;
+  if($debug) {
+    for my $i(0..$#day_off) {
+      print "$i, ";
+      for my $j(0..$#{$day_off[$i]}) {
+	print "$day_off[$i][$j],"
+      }
+      print "\n";
+    }
+  }
   # }}}
   ### Calendar {{{
   my $nu_week = `echo -n "\$((\`cal -h| wc -l\`-2))"`;
   my @cal_weeks = `cal -h | tail -n $nu_week | head -n \$(($nu_week-1))`;
   my $first_sunday = $1, if($cal_weeks[0]=~/(\d)\s*$/);
   my $last_day = $1, if($cal_weeks[$#cal_weeks]=~/(\d+)\s*$/);
-  #my $first_weekdays = $cal_weeks[0];
   print " >>> First sunday of month: $first_sunday\n", if($debug);
   print " >>> The last day of month: $last_day\n", if($debug);
-  #print " >>> First weekdays: $first_weekdays\n", if($debug);
+  my $begin_weekday;
+  ($first_sunday==7)?($begin_weekday=1):($begin_weekday=7-$first_sunday);
+  my $compensation = $begin_weekday-1;
+  for my $day(1..$last_day) {
+    $weekday = (($day%7)+$compensation)%7;
+    $weekday = 7, if($weekday==0);
+    print " >>> Day: $day, Weekday: $weekday\n", if($debug);
+    for my $c(1..8) {
+
+    }
+  }
   # }}}
 
   print "======================\n", if($debug); 

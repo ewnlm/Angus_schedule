@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
   use strict;
-  my $debug=0;
+  my $debug=1;
   my @staff;
   my %schedulue;
   my @day_off;
@@ -22,10 +22,6 @@
     push @day_off, [$1, $2], if(/(\w+),(\w+)/);
   }
   print "$day_off[0][0]\n";
-  my @ary;
-  #@ary = grep {$_ =~ /[^$day_off[0][1]]/} grep {$_ =~ /[^$day_off[0][0]]/} @staff;
-  @ary = grep  {!($_ ~~ @{$day_off[0]})} @staff;
-  print "@ary\n";
   close FP;
   if($debug) {
     for my $i(0..$#day_off) {

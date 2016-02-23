@@ -21,12 +21,25 @@ The table show the detail of schedule
 
 ### Reviews
 
-* To search array from another array
+* To search the array **day\_off** from another array **staff**
+ - The array day\_off only two elements.
 ```
   @ary = grep {$_ =~ /[^$day_off[0][1]]/} grep {$_ =~ /[^$day_off[0][0]]/} @staff;
 ```
-  * negate smart match
+* Negate smart match
+ - More clever search with smart match
 ```
   @ary = grep  {!($_ ~~ @{$day_off[0]})} @staff;
 ```
+
+* The *rand()* function isn't my expectation for the array which have few elements.
+  - New function *ary_shuffle* 
+    * The array reverse
+    ```
+    @ary = reverse @ary;
+    ```
+    * The element exchange 
+    ```
+    @ary[1,2] = @ary[2,1];
+    ```
 

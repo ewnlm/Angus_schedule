@@ -34,11 +34,11 @@ The table show the detail of schedule
 
 * The *rand()* function isn't my expectation for the array which have few elements.
   - New function *ary_shuffle* 
-    * If *rand(50)* mod 2 is equal to 0 then to reverse the array.
+    * If *rand(50)* mod 2 is equal to 0 then to reverse the array. For example
     ```perl
     @ary = reverse @ary;
     ```
-    * If *rand(50)* mod 3 is equal to 0 then to exchange the elements of array.
+    * If *rand(50)* mod 3 is equal to 0 then to exchange the elements of array. For instance
     ```perl
     @ary[1,2] = @ary[2,1];
     ```

@@ -35,11 +35,11 @@ The table show the detail of schedule
 * The *rand()* function isn't my expectation for the array which have few elements.
   - New function *ary_shuffle* 
     * The array reverse
-    ```
+    ```perl
     @ary = reverse @ary;
     ```
     * The element exchange 
-    ```
+    ```perl
     @ary[1,2] = @ary[2,1];
     ```
 

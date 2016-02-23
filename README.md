@@ -23,12 +23,12 @@ The table show the detail of schedule
 
 * To search the array **day\_off** from another array **staff**
  - The array day\_off only two elements.
-```
+```perl
   @ary = grep {$_ =~ /[^$day_off[0][1]]/} grep {$_ =~ /[^$day_off[0][0]]/} @staff;
 ```
 * Negate smart match
  - More clever search with smart match
-```
+```perl  
   @ary = grep  {!($_ ~~ @{$day_off[0]})} @staff;
 ```
 

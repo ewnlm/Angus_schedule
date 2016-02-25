@@ -40,7 +40,10 @@ The table show the detail of schedule
     ```
     * If the *rand(50)* mod 3 is equal to 0 then to exchange the elements of array. For instance
     ```perl
-    @ary[1,2] = @ary[2,1];
+    @ary[n,n+1] = @ary[n+1,n];
+    if($n==$#ary) {
+      @ary[$#ary,0] = @ary[0,$#ary];
+    }
     ```
     * If the *rand(50)* mod 5 is equal to 0 then to rotate the array by *pop, push, shift and unshift*
 

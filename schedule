@@ -7,6 +7,7 @@
   my $weekday;
   my @class_unit = (7.5, 7.5, 7.5, 8, 6.5, 9, 9, 9);
   my @time_card;
+  srand();
   print "===== Debug Mode =====\n", if($debug); 
   ### Staff {{{
   open FP, "staff.csv";
@@ -75,12 +76,33 @@
   ### }}}
   #}
   print "======================\n", if($debug); 
+  my @ary = &ary_shuffle(@staff);
   print "@ary\n";
   sub ary_shuffle {
     my @ary = @_;
-    my @result;
-    for my $i(0..$#ary) {
-      my $nu = int(rand()%($#ary-$i));
+    my $nu=rand(50);
+    $nu = 15;
+    if($nu%2==0) {
+      @ary= reverse @ary;
     }
-    @result;
+    if($nu%3==0) {
+      #0,1,2,3,4
+      #1,0,3,2,4
+      #4,0,3,2,1
+      #
+      #0,1,2,3
+      #1,0,3,2
+      for my $i(map {$_*2} 0..(int($#ary/2)+($#ary%2))) {
+	print "$i\n";
+      }
+    }
+    if($nu%5==0) {
+      my $times = int $nu/5;
+      my $lr = $times%2;
+      for my $i(0..$times) {
+	($lr)?(push @ary, shift @ary):
+	(unshift @ary, pop @ary);
+      }
+    }
+    @ary;
   }

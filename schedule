@@ -1,5 +1,6 @@
 #!/usr/bin/perl -w
   use strict;
+  use experimental 'smartmatch'; # perl 5.18
   my $debug=0;
   my @staff;
   my %schedule;
@@ -70,31 +71,28 @@
   # Saturday Class 6/7/8
   $cnt = 0;
   for my $day(sort {$a<=>$b} keys %{$schedule{6}}) {
-    my @sat_mp = grep {!($_ ~~ @{$day_off[$cnt]})} @staff; 
-
+    my @sat_mp = grep {!($_ ~~ @{$day_off[$cnt]})} @staff;
+    @sat_mp = &ary_shuffle(@sat_mp);
+    $schedule{6}{$day}{6} = $sat_mp[0];
+    $schedule{6}{$day}{7} = $sat_mp[1];
+    $schedule{6}{$day}{8} = $sat_mp[2];
+    $cnt++;
   }
   ### }}}
   #}
   print "======================\n", if($debug); 
-  my @ary = &ary_shuffle(@staff);
-  print "@ary\n";
   sub ary_shuffle {
+    ### sub function ary_shuffle {{{
     my @ary = @_;
-    my $nu=rand(50);
-    $nu = 15;
+    my $nu=int rand(50);
+    $nu = 2;
     if($nu%2==0) {
-      @ary= reverse @ary;
+      @ary = reverse @ary;
     }
     if($nu%3==0) {
-      #0,1,2,3,4
-      #1,0,3,2,4
-      #4,0,3,2,1
-      #
-      #0,1,2,3
-      #1,0,3,2
       for my $i(map {$_*2} 0..(int($#ary/2)+($#ary%2))) {
-	print "$i\n";
-      }
+	($i>=$#ary)?(@ary[$#ary,0]=@ary[0,$#ary]):(
+	  @ary[$i,$i+1]=@ary[$i+1,$i])}
     }
     if($nu%5==0) {
       my $times = int $nu/5;
@@ -105,4 +103,5 @@
       }
     }
     @ary;
+    ### }}}
   }

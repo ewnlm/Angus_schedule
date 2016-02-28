@@ -3,7 +3,7 @@
   use experimental 'smartmatch'; # perl 5.18
   my $debug=0;
   my @staff;
-  my %schedule;
+  my (%schedule, %weekdays);
   my @day_off;
   my $weekday;
   my @class_unit = (7.5, 7.5, 7.5, 8, 6.5, 9, 9, 9);
@@ -50,34 +50,22 @@
     $weekday = (($day%7)+$compensation)%7;
     $weekday = 7, if($weekday==0);
     print " >>> Day: $day, Weekday: $weekday\n", if($debug);
-    ### $schedule{$weekday}{$day}{$class} = man_power
-    for my $c(1..8) {
-      if($weekday==6 and $c==1) {
-	$schedule{$weekday}{$day}{$c} = $day_off[$cnt][0];
-      } elsif($weekday==6 and $c==2) {
-	$schedule{$weekday}{$day}{$c} = $day_off[$cnt][1];
-	$cnt++;
-      } elsif($weekday==6 and $c>=3 and $c<=5) {
-	$schedule{$weekday}{$day}{$c} = "XXX";
-      } elsif($weekday=7) {
-	$schedule{$weekday}{$day}{$c} = "XXX"
-      } else {
-	$schedule{$weekday}{$day}{$c} = "NONE"
-      }
+    ### $schedule{$day} = [Class]
+    ### $weekdays{$day} = $weekday;
+    $weekdays{$day} = $weekday;
+    if($weekday == 7 ) {
+      push @{$schedule{$day}}, 1..8;
+    } elsif($weekday == 6) {
+      push @{$schedule{$day}}, @{$day_off[$cnt]};
+      push @{$schedule{$day}}, 3..8;
+      $cnt++;
+    } else {
+      push @{$schedule{$day}}, 1..8;
     }
   }
   # }}}
   ### Scheduling {{{
-  # Saturday Class 6/7/8
-  $cnt = 0;
-  for my $day(sort {$a<=>$b} keys %{$schedule{6}}) {
-    my @sat_mp = grep {!($_ ~~ @{$day_off[$cnt]})} @staff;
-    @sat_mp = &ary_shuffle(@sat_mp);
-    $schedule{6}{$day}{6} = $sat_mp[0];
-    $schedule{6}{$day}{7} = $sat_mp[1];
-    $schedule{6}{$day}{8} = $sat_mp[2];
-    $cnt++;
-  }
+  # 
   ### }}}
   #}
   print "======================\n", if($debug); 

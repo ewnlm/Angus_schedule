@@ -48,11 +48,13 @@ The table show the detail of schedule
     @ary = reverse @ary;
     ```
 *  To revise the architecture. The origin architecture is
+
   ```perl
   $schedule{$weekday}{$day}{$class} = $man;
   @timecard;
   ```
   by the some unsoloved reasons, we have this new architecture is
+
   ```perl
   $schedule{$day} = [$man_A, $man_B, $man_C, $man_D, $man_E];
   $weekdays{$day} = $weekday;

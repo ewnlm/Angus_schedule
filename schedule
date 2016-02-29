@@ -7,7 +7,7 @@
   my @day_off;
   my $weekday;
   my @class_unit = (7.5, 7.5, 7.5, 8, 6.5, 9, 9, 9);
-  my @time_card;
+  my %timecard;
   srand();
   print "===== Debug Mode =====\n", if($debug); 
   ### Staff {{{
@@ -54,28 +54,65 @@
     ### $weekdays{$day} = $weekday;
     $weekdays{$day} = $weekday;
     if($weekday == 7 ) {
-      push @{$schedule{$day}}, 1..8;
+      push @{$schedule{$day}}, 1..5;
     } elsif($weekday == 6) {
       push @{$schedule{$day}}, @{$day_off[$cnt]};
       push @{$schedule{$day}}, 3..8;
       $cnt++;
     } else {
-      push @{$schedule{$day}}, 1..8;
+      push @{$schedule{$day}}, 1..5;
     }
   }
   # }}}
   ### Scheduling {{{
-  # 
+  my $get_first_day=0;
+  $cnt = 0;
+  for my $d(sort {$a<=>$b} keys %schedule) {
+    ($weekdays{$d}<6 and !$get_first_day)?($get_first_day=1):($get_first_day=$get_first_day);
+    if($get_first_day) {
+      ### Monday /Thursday or the first day of month
+      @{$schedule{$d}} = &ary_shuffle(@staff), if($weekdays{$d}==1 or $weekdays{$d}==4 or $d==1);
+      ### Timecard calculate
+      map {$timecard{$schedule{$d}[$_]}+=$class_unit[$_], if($schedule{$d}[$_]!~/^\d/)} 
+      0..$#{$schedule{$d}};
+    }
+    if($d!=1 and $get_first_day and ($weekdays{$d}==2 or $weekdays{$d}==5)) {
+      my @yesterday = &ary_shuffle(@{$schedule{$d-1}}[0,2,3]);
+      @{$schedule{$d}}[1..2] = @yesterday[0..1]; 
+      @yesterday[0..1] = @{$schedule{$d-1}}[1,4];
+      @{$schedule{$d}}[3,0,4] = sort {$timecard{$a}<=>$timecard{$b}} @yesterday;
+    }
+    if($d!=1 and $get_first_day and $weekdays{$d}==3) {
+      my @tuesday = &ary_shuffle(@{$schedule{$d-1}}[0,2,3]);
+      @{$schedule{$d}}[0,2] = @tuesday[0..1];
+      @tuesday[1..2] = @{$schedule{$d-1}}[1,4];
+      @{$schedule{$d}}[3,1,4] = sort {$timecard{$a}<=>$timecard{$b}} @tuesday;
+      ### Timecard calculate
+      map {$timecard{$schedule{$d}[$_]}+=$class_unit[$_], if($schedule{$d}[$_]!~/^\d/)} 
+      0..$#{$schedule{$d}};
+    }
+
+    @{$schedule{$d}}=map {($_=~/[345]/)?($_="X"):($_=$_)} @{$schedule{$d}}, if($weekdays{$d}==6);
+    @{$schedule{$d}}=map {$_="None"} @{$schedule{$d}}, if($weekdays{$d}==7);
+  }
+
   ### }}}
-  #}
+  for my $d(sort {$a<=>$b} keys %schedule) {
+    print "Day: $d Weekday: $weekdays{$d}, [@{$schedule{$d}}]\n";
+  }
+  for my $man(keys %timecard) {
+    print "$man, $timecard{$man}\n";
+  }
   print "======================\n", if($debug); 
+
   sub ary_shuffle {
     ### sub function ary_shuffle {{{
     my @ary = @_;
     my $nu=int rand(50);
-    $nu = 2;
-    if($nu%2==0) {
-      @ary = reverse @ary;
+    my $lr = $nu%2;
+    for my $i(0..$nu) {
+      ($lr)?(push @ary, shift @ary):
+      (unshift @ary, pop @ary);
     }
     if($nu%3==0) {
       for my $i(map {$_*2} 0..(int($#ary/2)+($#ary%2))) {
@@ -83,12 +120,7 @@
 	  @ary[$i,$i+1]=@ary[$i+1,$i])}
     }
     if($nu%5==0) {
-      my $times = int $nu/5;
-      my $lr = $times%2;
-      for my $i(0..$times) {
-	($lr)?(push @ary, shift @ary):
-	(unshift @ary, pop @ary);
-      }
+      @ary = reverse @ary;
     }
     @ary;
     ### }}}

@@ -60,20 +60,20 @@ The table show the detail of schedule
   ```
 *  The _grep_ and _map_ is very awsome useful function in Perl to process the arrays even the hashs.
   For instance
-    * To create the array of 0,2,4,6,...$#ary.
+    - To create the array of 0,2,4,6,...$#ary.
     ```perl
 	for my $i(map {$_*2} 0..(int($#ary/2)+($#ary%2))) {}
     ```
-    * To calculate the total work hours.
+    - To calculate the total work hours.
     ```perl
 	map {$timecard{$schedule{$d}[$_]}+=$class_unit[$_], if($schedule{$d}[$_]!~/^\d/)} 
 	0..$#{$schedule{$d}};
     ```
-    * To fill the string "None" in the array.
+    - To fill the string "None" in the array.
     ```perl
       @{$schedule{$d}}=map {$_="None"} @{$schedule{$d}}, if($weekdays{$d}==7);
     ```
-    * We could have the if...else statement in the block of _map_
+    - We could have the if...else statement in the block of _map_
     ```perl
       @{$schedule{$d}}=map {($_=~/[345]/)?($_="X"):($_=$_)} @{$schedule{$d}}, if($weekdays{$d}==6);
     ```

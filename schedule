@@ -8,6 +8,7 @@
   my $weekday;
   my @class_unit = (7.5, 7.5, 7.5, 8, 6.5, 9, 9, 9);
   my %timecard;
+  my %class;
   srand();
   print "===== Debug Mode =====\n", if($debug); 
   ### Staff {{{
@@ -71,10 +72,12 @@
     ($weekdays{$d}<6 and !$get_first_day)?($get_first_day=1):($get_first_day=$get_first_day);
     if($get_first_day) {
       ### Monday /Thursday or the first day of month
-      @{$schedule{$d}} = &ary_shuffle(@staff), if($weekdays{$d}==1 or $weekdays{$d}==4 or $d==1);
-      ### Timecard calculate
-      map {$timecard{$schedule{$d}[$_]}+=$class_unit[$_], if($schedule{$d}[$_]!~/^\d/)} 
-      0..$#{$schedule{$d}};
+      if($weekdays{$d}==1 or $weekdays{$d}==4 or $d==1) {
+	@{$schedule{$d}} = &ary_shuffle(@staff);
+	### Timecard calculate
+	map {$timecard{$schedule{$d}[$_]}+=$class_unit[$_], if($schedule{$d}[$_]!~/^\d/)} 
+	0..$#{$schedule{$d}};
+      }
     }
     if($d!=1 and $get_first_day and ($weekdays{$d}==2 or $weekdays{$d}==5)) {
       my @yesterday = &ary_shuffle(@{$schedule{$d-1}}[0,2,3]);
@@ -85,23 +88,65 @@
     if($d!=1 and $get_first_day and $weekdays{$d}==3) {
       my @tuesday = &ary_shuffle(@{$schedule{$d-1}}[0,2,3]);
       @{$schedule{$d}}[0,2] = @tuesday[0..1];
-      @tuesday[1..2] = @{$schedule{$d-1}}[1,4];
+      @tuesday[0..1] = @{$schedule{$d-1}}[1,4];
       @{$schedule{$d}}[3,1,4] = sort {$timecard{$a}<=>$timecard{$b}} @tuesday;
       ### Timecard calculate
       map {$timecard{$schedule{$d}[$_]}+=$class_unit[$_], if($schedule{$d}[$_]!~/^\d/)} 
       0..$#{$schedule{$d}};
     }
+    if($d!=1 and $get_first_day and $weekdays{$d}==6) {
+      @{$schedule{$d}} = map {(/[345]/)?("X"):($_)} @{$schedule{$d}};
+      my @saturday = grep {!($_ ~~ @{$schedule{$d}}[0..1])} @staff;
+      @{$schedule{$d}}[5..7] = &ary_shuffle(@saturday);
+    }
 
-    @{$schedule{$d}}=map {($_=~/[345]/)?($_="X"):($_=$_)} @{$schedule{$d}}, if($weekdays{$d}==6);
-    @{$schedule{$d}}=map {$_="None"} @{$schedule{$d}}, if($weekdays{$d}==7);
+    @{$schedule{$d}}= map {"None"} @{$schedule{$d}}, if($weekdays{$d}==7);
+  }
+  %timecard = ();
+  for my $d(sort {$a<=>$b} keys %schedule) {
+    if($weekdays{$d}!=7 and $weekdays{$d}!=6) {
+      map {$timecard{$schedule{$d}[$_]}+=$class_unit[$_]} 0..$#{$schedule{$d}};
+    }
+    if($weekdays{$d}==6) {
+      map {$timecard{$schedule{$d}[$_]}+=$class_unit[$_]} 5..7;
+    }
+  }
+  for my $d(sort {$a<=>$b} keys %schedule) {
+    if($weekdays{$d}<=5) {
+      for my $c(0..4) {
+	$class{$schedule{$d}[$c]}{$c}++;
+      }
+    }
+    if($weekdays{$d}==6) {
+      for my $c(5..7) {
+	$class{$schedule{$d}[$c]}{$c}++;
+      }
+    }
   }
 
   ### }}}
+  print "Day,Weekday,";
+  print "Class1,Class2,Class3,Class4,Class5,Class6,Class7,Class8\n";
   for my $d(sort {$a<=>$b} keys %schedule) {
-    print "Day: $d Weekday: $weekdays{$d}, [@{$schedule{$d}}]\n";
+    print "$d,$weekdays{$d},", join ",", @{$schedule{$d}}, "\n";
+    #print "Day: $d Weekday: $weekdays{$d}, [@{$schedule{$d}}]\n";
   }
-  for my $man(keys %timecard) {
-    print "$man, $timecard{$man}\n";
+  print "\nMan,";
+  print "Class1,Class2,Class3,Class4,Class5,Class6,Class7,Class8\n";
+  for my $man(sort keys %class) {
+    print "$man, ";
+    for my $c(0..7) {
+      if(exists $class{$man}{$c}) {
+	print "$class{$man}{$c},";
+      } else {
+	print "0,";
+      }
+    }
+    print "\n";
+  }
+  print "\nTotal work hours\n";
+  for my $man(sort keys %timecard) {
+    print "$man,$timecard{$man}\n";
   }
   print "======================\n", if($debug); 
 

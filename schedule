@@ -37,8 +37,15 @@
   }
   # }}}
   ### Calendar {{{
-  my $nu_week = `echo -n "\$((\`cal -h| wc -l\`-2))"`;
-  my @cal_weeks = `cal -h | tail -n $nu_week | head -n \$(($nu_week-1))`;
+  my $nu_week;
+  my @cal_weeks;
+  if($#ARGV==1) {
+    $nu_week = `echo -n "\$((\`cal -h $ARGV[0] $ARGV[1]| wc -l\`-2))"`;
+    @cal_weeks = `cal -h $ARGV[0] $ARGV[1]| tail -n $nu_week | head -n \$(($nu_week-1))`;
+  } else {
+    $nu_week = `echo -n "\$((\`cal -h| wc -l\`-2))"`;
+    @cal_weeks = `cal -h | tail -n $nu_week | head -n \$(($nu_week-1))`;
+  }
   my $first_sunday = $1, if($cal_weeks[0]=~/(\d)\s*$/);
   my $last_day = $1, if($cal_weeks[$#cal_weeks]=~/(\d+)\s*$/);
   print " >>> First sunday of month: $first_sunday\n", if($debug);

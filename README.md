@@ -32,13 +32,24 @@ and support the specific month and years. For instance
 ```
 In the current directary, the *result.csv* will be created.
 
+
 ### Reviews
+
+1. The calendar 
+  * To utilize the _cal_ command and to process it by perl
+  ```perl
+    $nu_week = `echo -n "\$((\`cal -h| wc -l\`-2))"`;
+    @cal_weeks = `cal -h | tail -n $nu_week | head -n \$(($nu_week-1))`;
+  ```
+  The sclar *$nu_week* get the number of weeks.
+  The array *@cal_weeks* stroage the output from the *cal*
 
 * To search the array **day\_off** from another array **staff**
  - The array day\_off only two elements.
   ```perl
   @ary = grep {$_ =~ /[^$day_off[0][1]]/} grep {$_ =~ /[^$day_off[0][0]]/} @staff;
   ```
+
 * Negate smart match
  - More clever search with smart match
   ```perl  
@@ -89,12 +100,12 @@ In the current directary, the *result.csv* will be created.
 
     - To fill the string "None" in the array.
     ```perl
-      @{$schedule{$d}}=map {$_="None"} @{$schedule{$d}}, if($weekdays{$d}==7);
+      @{$schedule{$d}}=map {"None"} @{$schedule{$d}}, if($weekdays{$d}==7);
     ```
 
     - We could have the if...else statement in the block of _map_
     ```perl
-      @{$schedule{$d}}=map {($_=~/[345]/)?($_="X"):($_=$_)} @{$schedule{$d}}, if($weekdays{$d}==6);
+      @{$schedule{$d}}=map {(/[345]/)?("X"):($_)} @{$schedule{$d}}, if($weekdays{$d}==6);
     ```
 
 *  Use the _sort_ to arrange the man power by its work hours.

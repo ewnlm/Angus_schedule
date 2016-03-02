@@ -70,14 +70,12 @@
   $cnt = 0;
   for my $d(sort {$a<=>$b} keys %schedule) {
     ($weekdays{$d}<6 and !$get_first_day)?($get_first_day=1):($get_first_day=$get_first_day);
-    if($get_first_day) {
+    if($get_first_day and ($weekdays{$d}==1 or $weekdays{$d}==4 or $d==1)) {
       ### Monday /Thursday or the first day of month
-      if($weekdays{$d}==1 or $weekdays{$d}==4 or $d==1) {
-	@{$schedule{$d}} = &ary_shuffle(@staff);
-	### Timecard calculate
-	map {$timecard{$schedule{$d}[$_]}+=$class_unit[$_], if($schedule{$d}[$_]!~/^\d/)} 
-	0..$#{$schedule{$d}};
-      }
+      @{$schedule{$d}} = &ary_shuffle(@staff);
+      ### Timecard calculate
+      map {$timecard{$schedule{$d}[$_]}+=$class_unit[$_], if($schedule{$d}[$_]!~/^\d/)} 
+      0..$#{$schedule{$d}};
     }
     if($d!=1 and $get_first_day and ($weekdays{$d}==2 or $weekdays{$d}==5)) {
       my @yesterday = &ary_shuffle(@{$schedule{$d-1}}[0,2,3]);
@@ -102,6 +100,8 @@
 
     @{$schedule{$d}}= map {"None"} @{$schedule{$d}}, if($weekdays{$d}==7);
   }
+  ### }}}
+  ### Summary class and timecard {{{
   %timecard = ();
   for my $d(sort {$a<=>$b} keys %schedule) {
     if($weekdays{$d}!=7 and $weekdays{$d}!=6) {
@@ -123,31 +123,33 @@
       }
     }
   }
-
   ### }}}
-  print "Day,Weekday,";
-  print "Class1,Class2,Class3,Class4,Class5,Class6,Class7,Class8\n";
+  ### Output summary {{{
+  open FP, "> result.csv";
+  print FP "Day,Weekday,";
+  print FP "Class1,Class2,Class3,Class4,Class5,Class6,Class7,Class8\n";
   for my $d(sort {$a<=>$b} keys %schedule) {
-    print "$d,$weekdays{$d},", join ",", @{$schedule{$d}}, "\n";
-    #print "Day: $d Weekday: $weekdays{$d}, [@{$schedule{$d}}]\n";
+    print FP "$d,$weekdays{$d},", join ",", @{$schedule{$d}}, "\n";
   }
-  print "\nMan,";
-  print "Class1,Class2,Class3,Class4,Class5,Class6,Class7,Class8\n";
+  print FP "\nMan,";
+  print FP "Class1,Class2,Class3,Class4,Class5,Class6,Class7,Class8\n";
   for my $man(sort keys %class) {
-    print "$man, ";
+    print FP "$man, ";
     for my $c(0..7) {
       if(exists $class{$man}{$c}) {
-	print "$class{$man}{$c},";
+	print FP "$class{$man}{$c},";
       } else {
-	print "0,";
+	print FP "0,";
       }
     }
-    print "\n";
+    print FP "\n";
   }
-  print "\nTotal work hours\n";
+  print FP "\nTotal work hours\n";
   for my $man(sort keys %timecard) {
-    print "$man,$timecard{$man}\n";
+    print FP "$man,$timecard{$man}\n";
   }
+  close FP;
+  ###}}}
   print "======================\n", if($debug); 
 
   sub ary_shuffle {

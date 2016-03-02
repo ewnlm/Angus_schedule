@@ -41,8 +41,11 @@ In the current directary, the *result.csv* will be created.
     $nu_week = `echo -n "\$((\`cal -h| wc -l\`-2))"`;
     @cal_weeks = `cal -h | tail -n $nu_week | head -n \$(($nu_week-1))`;
   ```
-  The sclar *$nu_week* get the number of weeks.
-  The array *@cal_weeks* stroage the output from the *cal*
+  The sclar *$nu_week* get the number of weeks. And 
+  the array *@cal_weeks* stroage the output from the *cal*
+2. Seach the multiple elements in the array from the another array
+3. Randomize a array of few elements.
+4. The _map_ function.
 
 * To search the array **day\_off** from another array **staff**
  - The array day\_off only two elements.

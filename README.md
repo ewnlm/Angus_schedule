@@ -1,5 +1,6 @@
 #Angus\_schedule
-### Rule
+For scheduling the class of company.
+### Class
 |Class | Hours | Mon | Tue | Wed | Thu | Fri | Sat |
 | :---: | :---: | :---: | :---: | :---: | :---: |:---: | :---: |
 | 1 | 7.5 | :u55b6: | :u55b6: | :u55b6: | :u55b6: | :u55b6: | :u7981: |
@@ -13,11 +14,23 @@
 
 The table show the detail of schedule
 
-### Special rule
+### Rules
 * Class 2 or 5 (Today) forbid work on Class 2 and 3 (Tomorrow)
-* The class 2 or 5 on Tue forbid work on class 1 and 3 on Wed
+  - For Monday and Thursday as Today; Tuesday and Friday as Tomorrow
+* The class 2 or 5 on Tuesday forbid work on class 1 and 3 on Wednesday
 * Basiclly the work hours of month is 160
 * 中文測試
+
+### Usage
+To get the schedule table of this month
+```shell
+./schedule
+```
+and support the specific month and years. For instance
+```shell
+./schedule month years
+```
+In the current directary, the *result.csv* will be created.
 
 ### Reviews
 

@@ -26,9 +26,9 @@ To get the schedule table of this month
 ```shell
 ./schedule
 ```
-and support the specific month and years. For instance
+and support the specific month and year.
 ```shell
-./schedule month years
+./schedule month year
 ```
 In the current directary, the *result.csv* will be created.
 
@@ -41,80 +41,73 @@ In the current directary, the *result.csv* will be created.
     $nu_week = `echo -n "\$((\`cal -h| wc -l\`-2))"`;
     @cal_weeks = `cal -h | tail -n $nu_week | head -n \$(($nu_week-1))`;
   ```
-  The sclar *$nu_week* get the number of weeks. And 
-  the array *@cal_weeks* stroage the output from the *cal*
+
 2. Seach the multiple elements in the array from the another array
+  * Negate smart match
+   - More clever search with smart match.
+    ```perl  
+    @ary = grep  {!($_ ~~ @{$day_off[0]})} @staff;
+    ```
+
 3. Randomize a array of few elements.
+  * The *rand()* function isn't my expectation for the array which have few elements.
+    - New function *ary_shuffle* 
+      * The loop times N from the *rand(50)* then to rotate the array by _pop, push, shift and unshift_ 
+      with N times.
+      * If the *rand(50)* mod 3 is equal to 0 then to exchange the elements of array. For instance
+      ```perl
+      @ary[n,n+1] = @ary[n+1,n];
+      if($n==$#ary) {
+	@ary[$#ary,0] = @ary[0,$#ary];
+      }
+      ```
+      * If the *rand(50)* mod 5 is equal to 0 then to reverse the array. For example
+      ```perl
+      @ary = reverse @ary;
+      ```
+
 4. The _map_ function.
 
-* To search the array **day\_off** from another array **staff**
- - The array day\_off only two elements.
-  ```perl
-  @ary = grep {$_ =~ /[^$day_off[0][1]]/} grep {$_ =~ /[^$day_off[0][0]]/} @staff;
-  ```
+  *  The _grep_ and _map_ is very awsome useful function in Perl to process the arrays even the hashs.
+    For instance
 
-* Negate smart match
- - More clever search with smart match
-  ```perl  
-  @ary = grep  {!($_ ~~ @{$day_off[0]})} @staff;
-  ```
+      - To create the array of 0,2,4,6,...$#ary.
+      ```perl
+	  for my $i(map {$_*2} 0..(int($#ary/2)+($#ary%2))) {}
+      ```
 
-* The *rand()* function isn't my expectation for the array which have few elements.
-  - New function *ary_shuffle* 
-    * The loop times N from the *rand(50)* then to rotate the array by _pop, push, shift and unshift_ 
-    with N times.
-    * If the *rand(50)* mod 3 is equal to 0 then to exchange the elements of array. For instance
-    ```perl
-    @ary[n,n+1] = @ary[n+1,n];
-    if($n==$#ary) {
-      @ary[$#ary,0] = @ary[0,$#ary];
-    }
-    ```
-    * If the *rand(50)* mod 5 is equal to 0 then to reverse the array. For example
-    ```perl
-    @ary = reverse @ary;
-    ```
-*  To revise the architecture. The origin architecture is
+      - To calculate the total work hours.
+      ```perl
+	  map {$timecard{$schedule{$d}[$_]}+=$class_unit[$_], if($schedule{$d}[$_]!~/^\d/)} 
+	  0..$#{$schedule{$d}};
+      ```
 
-  ```perl
-  $schedule{$weekday}{$day}{$class} = $man;
-  @timecard;
-  ```
-  by the some unsoloved reasons, we have this new architecture is
+      - To fill the string "None" in the array.
+      ```perl
+	@{$schedule{$d}}=map {"None"} @{$schedule{$d}}, if($weekdays{$d}==7);
+      ```
 
-  ```perl
-  $schedule{$day} = [$man_A, $man_B, $man_C, $man_D, $man_E];
-  $weekdays{$day} = $weekday;
-  $timecard{$man} = Total_work_hours;
-  ```
-*  The _grep_ and _map_ is very awsome useful function in Perl to process the arrays even the hashs.
-  For instance
+      - We could have the if...else statement in the block of _map_
+      ```perl
+	@{$schedule{$d}}=map {(/[345]/)?("X"):($_)} @{$schedule{$d}}, if($weekdays{$d}==6);
+      ```
 
-    - To create the array of 0,2,4,6,...$#ary.
-    ```perl
-	for my $i(map {$_*2} 0..(int($#ary/2)+($#ary%2))) {}
-    ```
+  *  Use the _sort_ to arrange the man power by its work hours.
+      ```perl
+	my @yesterday = &ary_shuffle(@{$schedule{$d-1}}[0,2,3]);
+	@{$schedule{$d}}[1..2] = @yesterday[0..1]; 
+	@yesterday[0..1] = @{$schedule{$d-1}}[1,4];
+	@{$schedule{$d}}[3,0,4] = sort {$timecard{$a}<=>$timecard{$b}} @yesterday;
+      ```
+5.  To revise the architecture. The origin architecture is
+```perl
+$schedule{$weekday}{$day}{$class} = $man;
+@timecard;
+```
+by the some unsoloved reasons, we have this new architecture is
 
-    - To calculate the total work hours.
-    ```perl
-	map {$timecard{$schedule{$d}[$_]}+=$class_unit[$_], if($schedule{$d}[$_]!~/^\d/)} 
-	0..$#{$schedule{$d}};
-    ```
-
-    - To fill the string "None" in the array.
-    ```perl
-      @{$schedule{$d}}=map {"None"} @{$schedule{$d}}, if($weekdays{$d}==7);
-    ```
-
-    - We could have the if...else statement in the block of _map_
-    ```perl
-      @{$schedule{$d}}=map {(/[345]/)?("X"):($_)} @{$schedule{$d}}, if($weekdays{$d}==6);
-    ```
-
-*  Use the _sort_ to arrange the man power by its work hours.
-    ```perl
-      my @yesterday = &ary_shuffle(@{$schedule{$d-1}}[0,2,3]);
-      @{$schedule{$d}}[1..2] = @yesterday[0..1]; 
-      @yesterday[0..1] = @{$schedule{$d-1}}[1,4];
-      @{$schedule{$d}}[3,0,4] = sort {$timecard{$a}<=>$timecard{$b}} @yesterday;
-    ```
+```perl
+$schedule{$day} = [$man_A, $man_B, $man_C, $man_D, $man_E];
+$weekdays{$day} = $weekday;
+$timecard{$man} = Total_work_hours;
+```

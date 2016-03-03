@@ -132,13 +132,19 @@
   }
   ### }}}
   ### Output summary {{{
-  open FP, "> result.csv";
+  open FP, "> Schedule_table.csv";
   print FP "Day,Weekday,";
   print FP "Class1,Class2,Class3,Class4,Class5,Class6,Class7,Class8\n";
   for my $d(sort {$a<=>$b} keys %schedule) {
-    print FP "$d,$weekdays{$d},", join ",", @{$schedule{$d}}, "\n";
+    if($weekdays{$d}!=6) {
+      print FP "$d,$weekdays{$d},", join ",", @{$schedule{$d}}, ",,\n";
+    } else {
+      print FP "$d,$weekdays{$d},", join ",", @{$schedule{$d}}, "\n";
+    }
   }
-  print FP "\nMan,";
+  close FP;
+  open FP, "> Class.csv";
+  print FP "Man,";
   print FP "Class1,Class2,Class3,Class4,Class5,Class6,Class7,Class8\n";
   for my $man(sort keys %class) {
     print FP "$man, ";
@@ -151,6 +157,8 @@
     }
     print FP "\n";
   }
+  close FP;
+  open FP, "> Work_hours.csv";
   print FP "\nTotal work hours\n";
   for my $man(sort keys %timecard) {
     print FP "$man,$timecard{$man}\n";

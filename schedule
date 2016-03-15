@@ -181,9 +181,7 @@
 	($i>=$#ary)?(@ary[$#ary,0]=@ary[0,$#ary]):(
 	  @ary[$i,$i+1]=@ary[$i+1,$i])}
     }
-    if($nu%5==0) {
-      @ary = reverse @ary;
-    }
+    @ary = reverse @ary, if($nu%5==0);
     @ary;
     ### }}}
   }

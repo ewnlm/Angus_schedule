@@ -100,14 +100,14 @@ In the current directary, the *result.csv* will be created.
 	@{$schedule{$d}}[3,0,4] = sort {$timecard{$a}<=>$timecard{$b}} @yesterday;
       ```
 5.  To revise the architecture. The origin architecture is
-```perl
-$schedule{$weekday}{$day}{$class} = $man;
-@timecard;
-```
-by the some unsoloved reasons, we have this new architecture is
+    ```perl
+    $schedule{$weekday}{$day}{$class} = $man;
+    @timecard;
+    ```
+    by the some unsoloved reasons, we have this new architecture is
 
-```perl
-$schedule{$day} = [$man_A, $man_B, $man_C, $man_D, $man_E];
-$weekdays{$day} = $weekday;
-$timecard{$man} = Total_work_hours;
-```
+    ```perl
+    $schedule{$day} = [$man_A, $man_B, $man_C, $man_D, $man_E];
+    $weekdays{$day} = $weekday;
+    $timecard{$man} = Total_work_hours;
+    ```

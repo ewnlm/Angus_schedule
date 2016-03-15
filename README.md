@@ -58,7 +58,7 @@ In the current directary, the *result.csv* will be created.
       ```perl
       @ary[n,n+1] = @ary[n+1,n];
       if($n==$#ary) {
-	@ary[$#ary,0] = @ary[0,$#ary];
+	  @ary[$#ary,0] = @ary[0,$#ary];
       }
       ```
       * If the *rand(50)* mod 5 is equal to 0 then to reverse the array. For example
